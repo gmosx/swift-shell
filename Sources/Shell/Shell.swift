@@ -5,7 +5,7 @@ import Utility
 // TODO: Rename to ShellClient, ShellDriver or ShellUtils? -> nah...
 // TODO: support streaming output.
 
-extension String {
+public extension String {
     func escapingForShell() -> String {
         return self
             .replacingOccurrences(of: "&", with: "\\&")
