@@ -13,7 +13,7 @@ extension String {
     }
 }
 
-/// A programming interface for access to the operating system's services.
+/// A programming interface for accessing operating system services
 public class Shell {
     let isVerbose: Bool
 
