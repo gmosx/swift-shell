@@ -2,8 +2,10 @@ import Foundation
 import Basic
 import Utility
 
+// TODO: Split in multiple files
 // TODO: Rename to ShellClient, ShellDriver or ShellUtils? -> nah...
 // TODO: support streaming output.
+// TODO: extract filesystem related functionality as FileSystem package
 
 public extension String {
     func escapingForShell() -> String {
@@ -25,6 +27,10 @@ public class Shell {
         if isVerbose {
             print(text)
         }
+    }
+
+    public var fileManager: FileManager {
+        return FileManager.default
     }
 
     @discardableResult
@@ -63,11 +69,9 @@ public class Shell {
     }
 
     public func ensureDirectoryExists(atPath path: String) throws {
-        let fm = FileManager.default
-
-        if !fm.fileExists(atPath: path) {
+        if !fileManager.fileExists(atPath: path) {
             log("Created \(path)")
-            try fm.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
+            try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
         }
     }
 
@@ -78,13 +82,31 @@ public class Shell {
     }
 
     public func removeFile(atPath path: String) throws {
-        try FileManager.default.removeItem(atPath: path)
+        try fileManager.removeItem(atPath: path)
         log("Removed \(path)")
     }
 
     public func removeDirectory(atPath path: String) throws {
-        try FileManager.default.removeItem(atPath: path)
+        try fileManager.removeItem(atPath: path)
         log("Removed \(path)")
+    }
+
+    public func isDirectory(_ path: String) -> Bool {
+        var isDirectory: ObjCBool = false
+        fileManager.fileExists(atPath: path, isDirectory: &isDirectory)
+        return isDirectory.boolValue
+    }
+
+    public func isFile(_ path: String) -> Bool {
+        return !isDirectory(path)
+    }
+
+    public func subpaths(atPath path: String) -> [String] {
+        return fileManager.subpaths(atPath: path) ?? []
+    }
+
+    public func subfilepaths(atPath path: String) -> [String] {
+        return fileManager.subpaths(atPath: path)?.filter({ isFile("\(path)/\($0)") }) ?? []
     }
 
     public func confirm(_ message: String) -> Bool {
