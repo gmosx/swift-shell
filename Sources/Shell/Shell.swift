@@ -23,7 +23,7 @@ public class Shell {
         self.isVerbose = verbose
     }
 
-    func log(_ text: String) {
+    public func log(_ text: String) {
         if isVerbose {
             print(text)
         }
@@ -31,6 +31,10 @@ public class Shell {
 
     public var fileManager: FileManager {
         return FileManager.default
+    }
+
+    public func basePath(ofPath path: String) -> String {
+        return path.split(separator: "/").dropLast().joined(separator: "/")
     }
 
     @discardableResult
@@ -76,9 +80,29 @@ public class Shell {
     }
 
     // TODO: allow override/not-override
-    public func writeTextFile(atPath path: String, contents: String) throws {
+    public func writeTextFile(atPath path: String, contents: String, withIntermediateDirectories: Bool = true) throws {
+        if withIntermediateDirectories {
+            try ensureDirectoryExists(atPath: basePath(ofPath: path))
+        }
+
         try contents.write(to: URL(fileURLWithPath: path), atomically: false, encoding: .utf8)
         log("Created \(path)")
+    }
+
+    public func copyFile(atPath srcPath: String, toPath dstPath: String, force: Bool = false, withIntermediateDirectories: Bool = true) throws {
+        if force {
+            if fileManager.fileExists(atPath: dstPath) {
+                try removeFile(atPath: dstPath)
+            }
+        }
+
+        if withIntermediateDirectories {
+            try ensureDirectoryExists(atPath: basePath(ofPath: dstPath))
+        }
+
+        try fileManager.copyItem(atPath: srcPath, toPath: dstPath)
+
+        log("Copied \(srcPath) to \(dstPath)")
     }
 
     public func removeFile(atPath path: String) throws {
