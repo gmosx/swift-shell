@@ -33,6 +33,8 @@ public class Shell {
         return FileManager.default
     }
 
+    // TODO: extract functionality, add tests!
+    // TODO: consider returning `nil` if there is no basePath
     public func basePath(ofPath path: String) -> String {
         return path.split(separator: "/").dropLast().joined(separator: "/")
     }
@@ -82,7 +84,10 @@ public class Shell {
     // TODO: allow override/not-override
     public func writeTextFile(atPath path: String, contents: String, withIntermediateDirectories: Bool = true) throws {
         if withIntermediateDirectories {
-            try ensureDirectoryExists(atPath: basePath(ofPath: path))
+            let directoryPath = basePath(ofPath: path)
+            if directoryPath != "" {
+                try ensureDirectoryExists(atPath: directoryPath)
+            }
         }
 
         try contents.write(to: URL(fileURLWithPath: path), atomically: false, encoding: .utf8)
