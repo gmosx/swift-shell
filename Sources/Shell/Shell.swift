@@ -120,6 +120,10 @@ public class Shell {
         log("Removed \(path)")
     }
 
+    public func removeFilesRecursively(atPath rootPath: String, pattern filenamePattern: String) throws {
+        try execute("find \(rootPath) -type f -name '\(filenamePattern)' -delete")
+    }
+
     public func isDirectory(_ path: String) -> Bool {
         var isDirectory: ObjCBool = false
         fileManager.fileExists(atPath: path, isDirectory: &isDirectory)
