@@ -6,6 +6,7 @@ import Utility
 // TODO: Rename to ShellClient, ShellDriver or ShellUtils? -> nah...
 // TODO: support streaming output.
 // TODO: extract filesystem related functionality as FileSystem package
+// TODO: readJSONFile
 
 public extension String {
     func escapingForShell() -> String {
@@ -79,6 +80,17 @@ public class Shell {
             log("Created \(path)")
             try fileManager.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
         }
+    }
+
+    public func readTextFile(atPath path: String) -> String? {
+        let url = URL(fileURLWithPath: path)
+        guard
+            let data = try? Data(contentsOf: url),
+            let contents = String(data: data, encoding: .utf8) else {
+                return nil
+        }
+
+        return contents
     }
 
     // TODO: allow override/not-override
