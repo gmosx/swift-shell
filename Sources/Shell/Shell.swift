@@ -37,7 +37,8 @@ public class Shell {
     // TODO: extract functionality, add tests!
     // TODO: consider returning `nil` if there is no basePath
     public func basePath(ofPath path: String) -> String {
-        return path.split(separator: "/").dropLast().joined(separator: "/")
+        let base = path.split(separator: "/").dropLast().joined(separator: "/")
+        return path.starts(with: "/") ? "/\(base)" : base
     }
 
     @discardableResult
@@ -121,6 +122,17 @@ public class Shell {
 
         log("Copied \(srcPath) to \(dstPath)")
     }
+
+//    public func copyFile2(atPath srcPath: String, toPath dstPath: String, force: Bool = false, withIntermediateDirectories: Bool = true) throws {
+//        if withIntermediateDirectories {
+//            try execute("mkdir -p \(basePath(ofPath: dstPath))")
+//        }
+//
+//        let forceFlag = force ? " -f" : ""
+//        try execute("cp\(forceFlag) '\(srcPath)' '\(dstPath)'")
+//
+//        log("Copied \(srcPath) to \(dstPath)")
+//    }
 
     public func removeFile(atPath path: String) throws {
         try fileManager.removeItem(atPath: path)
