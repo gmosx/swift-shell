@@ -76,6 +76,10 @@ public class Shell {
         }
     }
 
+    public var currentDirectoryPath: String {
+        return fileManager.currentDirectoryPath
+    }
+
     public func ensureDirectoryExists(atPath path: String) throws {
         if !fileManager.fileExists(atPath: path) {
             log("Created \(path)")
