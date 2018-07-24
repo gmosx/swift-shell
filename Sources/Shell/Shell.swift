@@ -152,12 +152,17 @@ public class Shell {
         try execute("find \(rootPath) -type f -name '\(filenamePattern)' -delete")
     }
 
+    public func fileExists(atPath path: String) -> Bool {
+        return fileManager.fileExists(atPath: path)
+    }
+
     public func isDirectory(_ path: String) -> Bool {
         var isDirectory: ObjCBool = false
         fileManager.fileExists(atPath: path, isDirectory: &isDirectory)
         return isDirectory.boolValue
     }
 
+    // TODO: returns TRUE if file doesn't exist !!!
     public func isFile(_ path: String) -> Bool {
         return !isDirectory(path)
     }
@@ -170,13 +175,16 @@ public class Shell {
         return fileManager.subpaths(atPath: path)?.filter({ isFile("\(path)/\($0)") }) ?? []
     }
 
-    public func confirm(_ message: String) -> Bool {
-        print("\(message) [yes/NO]", terminator: " ")
+    public func confirm(_ message: String, withPositiveDefault: Bool = false) -> Bool {
+        let precanned = withPositiveDefault ? "YES/no" : "yes/NO"
+
+        print("\(message) [\(precanned)]", terminator: " ")
 
         let didConfirm: Bool
 
         if let input = readLine() {
-            didConfirm = input.lowercased() == "yes"
+            let lowercased = input.lowercased()
+            didConfirm = lowercased == "yes" || (withPositiveDefault && lowercased == "")
         } else {
             didConfirm = false
         }
